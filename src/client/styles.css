@@ -8,7 +8,7 @@
 }
 
 table {
-    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 #no-data {
@@ -21,14 +21,18 @@ table {
     flex-direction: row;
 }
 
-#ok-button {
-    margin-right: 5px;
+input:invalid {
+    background-color: #ffdfdf;
 }
 
-#phone:invalid {
-    border: 1px solid red;
+input, input:valid {
+    background-color: transparent;
 }
 
-#phone:valid {
-    border: 1px solid black;
+.required {
+    color: red;
+}
+
+#hint {
+    color: gray;
 }

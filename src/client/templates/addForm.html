@@ -7,27 +7,47 @@
 </head>
 <body>
   <script>
+    const postUserData = (form) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      form.className = 'submitted';
+      let object = {};
+      data.forEach((value, key) => object[key] = value);
+      const json = JSON.stringify(object);
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `http://127.0.0.1:12345/users/add`);
+      xhr.send(json);
+      xhr.onload = function() {
+        if (xhr.status !== 200)
+          alert(`Ошибка ${xhr.status}: ${xhr.statusText}`)
+        else {
+          alert('Пользователь добавлен')
+          window.location.href = '/users';
+        }
+      }
+    }
+
     const selectRegion = (regionSelect) => {
-      let xhr = new XMLHttpRequest();
+      const xhr = new XMLHttpRequest();
       xhr.open('POST', `http://127.0.0.1:12345/cities?region=${regionSelect.selectedIndex - 1}`);
       xhr.send();
       xhr.onload = function() {
-        const citySelect = document.getElementById('city');
+        const citySelect = document.getElementById('city_id');
         const json = JSON.parse(xhr.response);
-        console.log(json);
         citySelect.innerHTML = `
-        <option value="">-- Выберите город --</option>
+        <option value="-1">-- Выберите город --</option>
         ${json.body.length ?
-          json.body.map((item) =>
-            `<option value='city${item[0]}'>${item[2].replace('\n', '').trim()}</option>`).join('')
+          Object.values(json.body).map((item) =>
+            `<option value="${item['id']}">${item['city_name']}</option>`).join('')
           : ''
         }`;
       };
     }
   </script>
-  <form>
+  <form onsubmit="postUserData(this)">
     {content}
+    <button type="submit">OK</button>
   </form>
-  <div id="ok-button"><button onclick="">OK</button></div>
+
 </body>
 </html>

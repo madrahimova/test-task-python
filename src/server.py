@@ -1,3 +1,5 @@
+import json
+
 from server.tools import handle_endpoint
 import socket
 import subprocess
@@ -14,9 +16,15 @@ def run():
         client, addr = server.accept()
         request = client.recv(1024).decode()
         method, endpoint, _ = request.split('\n')[0].split(' ')
+        data = ''
+        try:
+            data = json.loads(request.split('\n')[-1])
+        except json.decoder.JSONDecodeError:
+            pass
+
         response = 'HTTP/1.0 405\n\nMethod Not Allowed'
         if method == 'POST':
-            response = handle_endpoint(endpoint)
+            response = handle_endpoint(endpoint, data)
         client.sendall(response.encode())
         client.close()
 

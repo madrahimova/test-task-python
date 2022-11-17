@@ -7,7 +7,19 @@ from . import db
 
 def users():
     conn = db.connect('../db.sqlite')
-    result = json.dumps({'body': db.select(conn, 'users')})
+    _users = db.select(conn, 'users')
+    _regions = db.select(conn, 'regions')
+    _cities = db.select(conn, 'cities')
+
+    for i in range(len(_users)):
+        if _users[i]['region_id'] not in [item['id'] for item in _regions]:
+            _users[i]['region_id'] = ''
+
+    for i in range(len(_users)):
+        if _users[i]['city_id'] not in [item['id'] for item in _cities]:
+            _users[i]['city_id'] = ''
+
+    result = json.dumps({'body': _users})
     conn.close()
     return result
 
@@ -29,3 +41,10 @@ def cities(endpoint: str = None):
     result = json.dumps({'body': db.select(conn, 'cities', f'cities.region_id = {cond}')})
     conn.close()
     return result
+
+
+def add_user(data):
+    conn = db.connect('../db.sqlite')
+    db.insert(conn, 'users', data.keys(), data.values())
+    conn.close()
+    return json.dumps({'body': 'OK'})
