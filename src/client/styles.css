@@ -1,0 +1,34 @@
+#users tr, #users td, #users th {
+    border: 1px solid;
+}
+
+#users {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table {
+    margin-bottom: 5px;
+}
+
+#no-data {
+    width: 100%;
+    text-align: center;
+}
+
+#func-buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+#ok-button {
+    margin-right: 5px;
+}
+
+#phone:invalid {
+    border: 1px solid red;
+}
+
+#phone:valid {
+    border: 1px solid black;
+}

@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS cities (
 
 CREATE TABLE IF NOT EXISTS users (
 	id INTEGER PRIMARY KEY,
-	first_name TEXT NOT NULL,
 	second_name TEXT NOT NULL,
+	first_name TEXT NOT NULL,
 	patronymic TEXT,
 	region_id INTEGER NOT NULL,
     city_id INTEGER NOT NULL,

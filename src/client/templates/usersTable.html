@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Пользователи</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<script>
+  const addUser = () => {
+    window.location.href = '/users/add';
+  }
+</script>
+<table id="users">
+  <tr>
+    <th>id</th>
+    <th>Фамилия</th>
+    <th>Имя</th>
+    <th>Отчество</th>
+    <th>Регион</th>
+    <th>Город</th>
+    <th>Контактный телефон</th>
+    <th>e-mail</th>
+  </tr>
+  {content}
+</table>
+<div id="func-buttons"><button onclick='addUser()'>Добавить</button></div>
+</body>
+</html>
