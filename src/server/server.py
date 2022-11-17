@@ -32,9 +32,9 @@ def run():
 
 
 try:
-    open('../db.sqlite').close()
+    open('../../db.sqlite').close()
 except FileNotFoundError:
-    open('../db.sqlite', 'x').close()
+    open('../../db.sqlite', 'x').close()
     subprocess.call(['sh', './db.sh'], cwd='../')
 
 run()
