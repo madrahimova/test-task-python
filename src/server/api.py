@@ -2,7 +2,7 @@
 Обработка запросов
 """
 import json
-from . import db
+import db
 
 
 def users():

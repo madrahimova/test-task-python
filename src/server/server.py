@@ -1,6 +1,6 @@
 import json
 
-from server.tools import handle_endpoint
+from tools import handle_endpoint
 import socket
 import subprocess
 

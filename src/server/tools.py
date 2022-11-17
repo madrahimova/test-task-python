@@ -1,7 +1,7 @@
 """
 Упрощение работы с запросами
 """
-from . import api
+import api
 
 
 def make_response(code: int, content: str) -> str:
