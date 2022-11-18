@@ -7,3 +7,5 @@
 - [Сервер](https://github.com/madrahimova/test-task-python/tree/main/src/server)
 - [Клиент](https://github.com/madrahimova/test-task-python/tree/main/src/client)
 
+<b>Резюме в формате PDF находится в папке [data](https://github.com/madrahimova/test-task-python/tree/main/data)</b>
+

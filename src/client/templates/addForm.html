@@ -35,7 +35,7 @@
         const citySelect = document.getElementById('city_id');
         const json = JSON.parse(xhr.response);
         citySelect.innerHTML = `
-        <option value="-1">-- Выберите город --</option>
+        <option value="">-- Выберите город --</option>
         ${json.body.length ?
           Object.values(json.body).map((item) =>
             `<option value="${item['id']}">${item['city_name']}</option>`).join('')
@@ -45,9 +45,9 @@
     }
   </script>
   <form onsubmit="postUserData(this)">
-    {content}
-    <button type="submit">OK</button>
+    {contents}
+    <button type="submit">Отправить</button>
   </form>
-
+  <a href="/users">К пользователям</a>
 </body>
 </html>

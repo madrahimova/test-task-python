@@ -19,5 +19,13 @@ def handle_endpoint(endpoint: str, data=None):
         return make_response(200, api.regions())
     elif endpoint.startswith('/cities'):
         return make_response(200, api.cities(endpoint))
+    elif endpoint.startswith('/import/excel'):
+        return make_response(200, api.import_excel(data))
+    elif endpoint.startswith('/export/excel'):
+        return make_response(200, api.export_excel())
+    elif endpoint.startswith('/import/pdf'):
+        return make_response(200, api.import_pdf(data))
+    elif endpoint.startswith('/export/pdf'):
+        return make_response(200, api.export_pdf())
     return make_response(404, '404 Not Found')
 

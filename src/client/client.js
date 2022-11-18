@@ -17,7 +17,7 @@ const getUsers = (callback) => {
     }`
 
     const index = fs.readFileSync('templates/usersTable.html').toString()
-    .replace('{content}', html);
+    .replace('{contents}', html);
 
     callback(index);
   });
@@ -55,7 +55,7 @@ const addUser = (callback) => {
         <tr>
           <td><label for="city_id">Город</label></td>
           <td><select id="city_id" name="city_id">
-            <option value="-1">-- Выберите город --</option>
+            <option value="">-- Выберите город --</option>
           </select></td>
         </tr>
         <tr>
@@ -72,7 +72,7 @@ const addUser = (callback) => {
       </table>`;
 
     const index = fs.readFileSync('templates/addForm.html').toString()
-    .replace('{content}', html);
+    .replace('{contents}', html);
 
     callback(index);
   });

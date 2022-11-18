@@ -10,9 +10,70 @@
   const addUser = () => {
     window.location.href = '/users/add';
   }
+
+  const readFile = (fileInput, callback) => {
+    const file = fileInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () =>
+        callback(reader.result.substring(reader.result.indexOf(',') + 1));
+      reader.onerror = () => alert('Не удалось прочитать файл');
+    }
+  }
+
+  const base64ToArrayBuffer = (base64) => {
+    const binary_string = window.atob(base64);
+    const len = binary_string.length;
+    let bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binary_string.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
+
+  const download = (filename, contents) => {
+    const byteArray = new Uint8Array(base64ToArrayBuffer(contents.slice(2, contents.length - 1)));
+    const a = window.document.createElement('a');
+    a.href = window.URL.createObjectURL(new Blob([byteArray], { type:'application/octet-stream' }));
+    a.download = filename;
+    document.body.appendChild(a)
+    a.click();
+    document.body.removeChild(a)
+  }
+
+  const importFromFile = (fileInput, type = 'excel' | 'pdf') => {
+    readFile(fileInput, (contents) =>
+      fetch(`http://127.0.0.1:12345/import/${type}`,
+        { method: 'post', body: contents })
+      .then((response => response.json()))
+      .then((json => {
+        if (json.body !== 'OK')
+          alert('Не удалось импортировать файл')
+        window.location.href = '/users'
+      }))
+      .catch(() => alert('Не удалось импортировать файл')));
+  }
+
+  const exportToFile = (button, type = 'excel' | 'pdf') => {
+    fetch(`http://127.0.0.1:12345/export/${type}`, { method: 'post' })
+    .then(response => response.text())
+    .then(contents => download(type === 'excel' ? 'users.xlsx' : 'users.pdf', contents))
+    .catch(() => alert('Не удалось экспортировать файл'));
+  }
 </script>
-<div id="func-buttons">
-  <button onclick='addUser()'>Добавить</button>
+<div>
+  <div class="func-buttons"><button onclick='addUser()'>Добавить</button></div>
+  <div class="func-buttons">
+    <label for="importExcel">Импортировать Excel:</label>
+    <input id="importExcel" type="file" accept=".xls, .xlsx" onchange='importFromFile(this, "excel")'/>
+    <label for="importPdf">Импортировать PDF:</label>
+    <input id="importPdf" type="file" accept=".pdf" onchange='importFromFile(this, "pdf")'/>
+  </div>
+  <div class="func-buttons">
+    <button onclick='exportToFile(this, "excel")'>Экспортировать Excel</button>
+    <button onclick='exportToFile(this, "pdf")'>Экспортировать PDF</button>
+  </div>
 </div>
 <table id="users">
   <tr>
@@ -25,7 +86,7 @@
     <th>Контактный телефон</th>
     <th>e-mail</th>
   </tr>
-  {content}
+  {contents}
 </table>
 </body>
 </html>

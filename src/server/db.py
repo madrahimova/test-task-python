@@ -29,8 +29,16 @@ def __get_columns(conn, table):
 
 
 def insert(conn, table: str, columns: list, values: list):
+    if len(values) != len(columns):
+        return
     cur = conn.cursor()
     params = ','.join(['?' for _ in values])
     cur.execute(f'INSERT INTO {table} ({",".join([item for item in columns])}) VALUES ({params})',
                 [str(item) for item in values])
+    conn.commit()
+
+
+def delete_from(conn, table: str):
+    cur = conn.cursor()
+    cur.execute('DELETE FROM %s' % table)
     conn.commit()

@@ -11,14 +11,23 @@ table {
     margin-top: 5px;
 }
 
+form {
+    margin-bottom: 5px;
+}
+
 #no-data {
     width: 100%;
     text-align: center;
 }
 
-#func-buttons {
+.func-buttons {
     display: flex;
     flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.func-buttons > * {
+    margin-right: 10px;
 }
 
 input:invalid {
