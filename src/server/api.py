@@ -113,7 +113,6 @@ def import_excel(data):
             db.insert(conn, 'users', columns, values)
         except:
             db.insert(conn, 'users', columns, _users)
-            print('!!!')
             return json.dumps({'body': 'ERR'})
 
     conn.close()
