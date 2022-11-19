@@ -50,7 +50,8 @@
       .then((json => {
         if (json.body !== 'OK')
           alert('Не удалось импортировать файл')
-        window.location.href = '/users'
+        else
+          window.location.href = '/users'
       }))
       .catch(() => alert('Не удалось импортировать файл')));
   }

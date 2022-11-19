@@ -17,13 +17,13 @@ def connect(db):
 def select(conn, table: str, cond=None):
     cur = conn.cursor()
     cur.execute('SELECT * FROM %s %s' % (table, f'WHERE {cond}' if cond else ''))
-    columns, rows = __get_columns(conn, table), cur.fetchall()
+    columns, rows = get_columns(conn, table), cur.fetchall()
     for i in range(len(rows)):
         rows[i] = {columns[j]: rows[i][j] for j in range(len(rows[i]))}
     return rows
 
 
-def __get_columns(conn, table):
+def get_columns(conn, table: str):
     cur = conn.execute(f'SELECT * FROM %s' % table)
     return [desc[0] for desc in cur.description]
 
