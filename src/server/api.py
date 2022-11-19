@@ -179,7 +179,7 @@ def import_pdf(data):
         lines = pdf.extractText().split('\n')
         full_name = lines[0].split(' ')
 
-        values = {columns[i]: full_name[i] for i in range(len(full_name))}
+        values = {columns[k]: full_name[k] for k in range(len(full_name))}
         for j in range(1, len(lines)):
             values[columns[j + 2]] = lines[j].split(': ')[1]
         __apply([__name_to_id, __replace_invalid], values, data)
