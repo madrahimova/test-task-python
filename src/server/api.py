@@ -51,7 +51,8 @@ def __update(conn, columns, values, data):
         db.insert(conn, 'users', columns, list(values.values()))
     except:
         db.insert(conn, 'users', columns, data['users'])
-        return json.dumps({'body': 'ERR'})
+        return False
+    return True
 
 
 def users():
@@ -112,15 +113,18 @@ def import_excel(data):
     data = {table: db.select(conn, table) for table in ['users', 'regions', 'cities']}
 
     sheet = workbook.active
+    result = True
     for row in sheet.iter_rows(min_row=2, min_col=2):
         values = {}
         for i, cell in enumerate(row):
             values[columns[i]] = cell.value
         __apply([__name_to_id, __replace_invalid], values, data)
-        __update(conn, columns, values, data)
+        result = __update(conn, columns, values, data)
+        if not result:
+            break
 
     conn.close()
-    return json.dumps({'body': 'OK'})
+    return json.dumps({'body': 'OK' if result else 'ERR'})
 
 
 def export_excel():
@@ -168,6 +172,7 @@ def import_pdf(data):
     columns = db.get_columns(conn, 'users')[1:]
     data = {table: db.select(conn, table) for table in ['users', 'regions', 'cities']}
 
+    result = True
     for i in range(reader.getNumPages()):
         pdf = reader.getPage(i)
 
@@ -178,10 +183,12 @@ def import_pdf(data):
         for j in range(1, len(lines)):
             values[columns[j + 2]] = lines[j].split(': ')[1]
         __apply([__name_to_id, __replace_invalid], values, data)
-        __update(conn, columns, values, data)
+        result = __update(conn, columns, values, data)
+        if not result:
+            break
 
     conn.close()
-    return json.dumps({'body': 'OK'})
+    return json.dumps({'body': 'OK' if result else 'ERR'})
 
 
 def export_pdf():
