@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
 docker network create test
-cd src/server && run.sh && cd ../client && run.sh
+cd src/server && chmod +x run.sh && ./run.sh && cd ../client && chmod +x run.sh && ./run.sh
