@@ -2,8 +2,10 @@ import * as http from 'http';
 import fetch from 'node-fetch';
 import * as fs from 'fs';
 
+const serverHost = process.env.SERVER || 'localhost';
+
 const getUsers = (callback) => {
-  fetch('http://127.0.0.1:12345/users', { method: 'post' })
+  fetch( `http://${serverHost}:12345/users`, { method: 'post', insecureHTTPParser: true })
   .then(response => response.json())
   .then(json => {
     const html = `
@@ -24,7 +26,7 @@ const getUsers = (callback) => {
 }
 
 const addUser = (callback) => {
-  fetch(`http://127.0.0.1:12345/regions`, { method: 'post' })
+  fetch(`http://${serverHost}:12345/regions`, { method: 'post', insecureHTTPParser: true })
   .then(response => response.json())
   .then(json => {
     const html = `
@@ -78,13 +80,34 @@ const addUser = (callback) => {
   });
 }
 
+const importFromFile = (contents, type = 'excel' | 'pdf', callback) => {
+  fetch(`http://${serverHost}:12345/import/${type}`,
+    { method: 'post', body: contents, insecureHTTPParser: true })
+  .then((response => response.json()))
+  .then((json => {
+    if (json.body === 'OK')
+      callback(200);
+    else
+      callback(500);
+  }))
+  .catch(() => callback(500));
+}
+
+const exportToFile = (type = 'excel' | 'pdf', callback) => {
+  fetch(`http://${serverHost}:12345/export/${type}`, { method: 'post', insecureHTTPParser: true })
+  .then(response => response.text())
+  .then(contents => callback(200, contents))
+  .catch(() => callback(500));
+}
+
 const writeHTML = (response, html) => {
   response.writeHeader(200, { 'Content-Type': 'text/html' });
   response.write(html);
   response.end();
 }
 
-const server = http.createServer(function (request, response) {
+http.createServer((request, response) => {
+  let body = '';
   switch (request.url) {
     case '/':
       response.writeHeader(302, { 'Location': '/users' });
@@ -96,6 +119,40 @@ const server = http.createServer(function (request, response) {
     case '/users/add':
       addUser(html => writeHTML(response, html));
       break;
+    case '/import/excel':
+      request.on('data', (chunk) => body += chunk);
+      request.on('end', () => {
+        importFromFile(body, 'excel', (code) => {
+          response.writeHead(code);
+          response.end();
+        });
+      });
+      break;
+    case '/export/excel':
+      exportToFile('excel', (code, data) => {
+        response.writeHead(code);
+        if (code === 200)
+            response.write(data);
+        response.end();
+      });
+      break;
+    case '/import/pdf':
+      request.on('data', (chunk) => body += chunk);
+      request.on('end', () => {
+        importFromFile(body, 'pdf', (code) => {
+          response.writeHead(code);
+          response.end();
+        });
+      });
+      break;
+    case '/export/pdf':
+      exportToFile('pdf', (code, data) => {
+        response.writeHead(code);
+        if (code === 200)
+          response.write(data);
+        response.end();
+      });
+      break;
     case '/styles.css':
       response.setHeader('Content-type', 'text/css');
       response.write(fs.readFileSync('styles.css'));
@@ -106,6 +163,6 @@ const server = http.createServer(function (request, response) {
       response.end();
       break;
   }
-}).listen(() =>
-  console.log(`Client is listening on http://127.0.0.1:${server.address()['port']}`)
+}).listen(8080, () =>
+  console.log(`Client is listening on http://localhost:8080`)
 );

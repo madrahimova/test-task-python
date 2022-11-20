@@ -5,8 +5,8 @@ import re
 import api
 
 
-def make_response(code: int, content: str) -> str:
-    return f'HTTP/1.0 {code}\nAccess-Control-Allow-Origin: *\n\n{content}'
+def make_response(code: int, contents: str) -> str:
+    return f'HTTP/1.0 {code}\nAccess-Control-Allow-Origin: *\n\n{contents}'
 
 
 def handle_endpoint(endpoint: str, data=None):

@@ -7,12 +7,12 @@ import os
 
 
 def run():
-    host, port = '127.0.0.1', 12345
+    host, port = '0.0.0.0', 12345
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((host, port))
     server.listen(1)
-    print(f'Server is listening on http://{host}:{port}')
+    print(f'Server is listening on http://localhost:{port}')
     while True:
         client, addr = server.accept()
         request = client.recv(1024 * 1024).decode('utf-8', 'ignore')
@@ -37,11 +37,9 @@ def run():
 
 
 try:
-    open('../db.sqlite').close()
+    open('db.sqlite').close()
 except FileNotFoundError:
-    open('../db.sqlite', 'x').close()
-    src = os.path.dirname(__file__)
-    parent = os.path.join(src, '../../')
-    subprocess.call(['sh', os.path.join(parent, 'db.sh')], cwd='../')
+    open('db.sqlite', 'x').close()
+    subprocess.call(['sh', 'db.sh'])
 
 run()

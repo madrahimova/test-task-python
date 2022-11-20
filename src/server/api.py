@@ -56,7 +56,7 @@ def __update(conn, columns, values, data):
 
 
 def users():
-    conn = db.connect('../db.sqlite')
+    conn = db.connect('db.sqlite')
     data = {table: db.select(conn, table) for table in ['users', 'regions', 'cities']}
 
     for i in range(len(data['users'])):
@@ -68,7 +68,7 @@ def users():
 
 
 def regions():
-    conn = db.connect('../db.sqlite')
+    conn = db.connect('db.sqlite')
     result = json.dumps({'body': db.select(conn, 'regions')})
     conn.close()
     return result
@@ -80,14 +80,14 @@ def cities(endpoint: str = None):
         cond = endpoint.split('/')[1].split('=')[1]
     except IndexError:
         pass
-    conn = db.connect('../db.sqlite')
+    conn = db.connect('db.sqlite')
     result = json.dumps({'body': db.select(conn, 'cities', f'cities.region_id = {cond}')})
     conn.close()
     return result
 
 
 def add_user(data):
-    conn = db.connect('../db.sqlite')
+    conn = db.connect('db.sqlite')
     db.insert(conn, 'users', data.keys(), data.values())
     conn.close()
     return json.dumps({'body': 'OK'})
@@ -97,7 +97,10 @@ def import_excel(data):
     tmp_path = 'tmp.xlsx'
 
     with open(tmp_path, 'wb') as f:
-        f.write(data)
+        try:
+            f.write(data)
+        except TypeError:
+            return json.dumps({'body': 'ERR'})
 
     try:
         workbook = openpyxl.load_workbook(tmp_path)
@@ -106,7 +109,7 @@ def import_excel(data):
         return json.dumps({'body': 'ERR'})
     os.remove(tmp_path)
 
-    conn = db.connect('../db.sqlite')
+    conn = db.connect('db.sqlite')
     db.delete_from(conn, 'users')
 
     columns = db.get_columns(conn, 'users')[1:]
@@ -130,7 +133,7 @@ def import_excel(data):
 def export_excel():
     tmp_path = 'tmp.xlsx'
 
-    conn = db.connect('../db.sqlite')
+    conn = db.connect('db.sqlite')
     columns = db.get_columns(conn, 'users')
     data = {table: db.select(conn, table) for table in ['users', 'regions', 'cities']}
     conn.close()
@@ -156,7 +159,10 @@ def import_pdf(data):
     tmp_path = 'tmp.pdf'
 
     with open(tmp_path, 'wb') as f:
-        f.write(data)
+        try:
+            f.write(data)
+        except TypeError:
+            return json.dumps({'body': 'ERR'})
 
     f = open('tmp.pdf', 'rb')
     os.remove(tmp_path)
@@ -166,7 +172,7 @@ def import_pdf(data):
     except:
         return json.dumps({'body': 'ERR'})
 
-    conn = db.connect('../db.sqlite')
+    conn = db.connect('db.sqlite')
     db.delete_from(conn, 'users')
 
     columns = db.get_columns(conn, 'users')[1:]
@@ -194,12 +200,12 @@ def import_pdf(data):
 def export_pdf():
     tmp_path = 'tmp.pdf'
 
-    conn = db.connect('../db.sqlite')
+    conn = db.connect('db.sqlite')
     data = {table: db.select(conn, table) for table in ['users', 'regions', 'cities']}
     conn.close()
 
     pdf = fpdf.FPDF(format='letter')
-    pdf.add_font('DejaVu', '', '../res/DejaVuSansCondensed.ttf', uni=True)
+    pdf.add_font('DejaVu', '', 'res/DejaVuSansCondensed.ttf', uni=True)
     for i in range(len(data['users'])):
         __ids_to_names(data['users'][i], data)
         pdf.add_page()

@@ -16,7 +16,7 @@
     if (file) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () =>
+      reader.onloadend = () =>
         callback(reader.result.substring(reader.result.indexOf(',') + 1));
       reader.onerror = () => alert('Не удалось прочитать файл');
     }
@@ -37,31 +37,33 @@
     const a = window.document.createElement('a');
     a.href = window.URL.createObjectURL(new Blob([byteArray], { type:'application/octet-stream' }));
     a.download = filename;
-    document.body.appendChild(a)
+    document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a)
+    document.body.removeChild(a);
   }
 
   const importFromFile = (fileInput, type = 'excel' | 'pdf') => {
-    readFile(fileInput, (contents) =>
-      fetch(`http://127.0.0.1:12345/import/${type}`,
-        { method: 'post', body: contents })
-      .then((response => response.json()))
-      .then((json => {
-        if (json.body !== 'OK')
-          alert('Не удалось импортировать файл')
+    readFile(fileInput, (contents) => {
+      fetch(
+        `http://localhost:8080/import/${type}`,
+        { method: 'post', body: contents }
+      ).then(response => {
+        if (response.status !== 200)
+          alert('Не удалось импортировать файл');
         else
-          window.location.href = '/users'
-      }))
-      .catch(() => alert('Не удалось импортировать файл')));
+          window.location.href = '/users';
+      });
+    });
   }
 
-  const exportToFile = (button, type = 'excel' | 'pdf') => {
-    fetch(`http://127.0.0.1:12345/export/${type}`, { method: 'post' })
-    .then(response => response.text())
-    .then(contents => download(type === 'excel' ? 'users.xlsx' : 'users.pdf', contents))
-    .catch(() => alert('Не удалось экспортировать файл'));
-  }
+  const exportToFile = (button, type = 'excel' | 'pdf') =>
+    fetch(`http://localhost:8080/export/${type}`, { method: 'post' })
+    .then(response => {
+      if (response.status !== 200)
+        alert('Не удалось экспортировать файл');
+      return response.text();
+    })
+    .then(contents => download(type === 'excel' ? 'users.xlsx' : 'users.pdf', contents));
 </script>
 <div>
   <div class="func-buttons"><button onclick='addUser()'>Добавить</button></div>
