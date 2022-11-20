@@ -3,7 +3,6 @@ import json
 from tools import handle_endpoint, make_response
 import socket
 import subprocess
-import os
 
 
 def run():
